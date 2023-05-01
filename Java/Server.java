@@ -10,7 +10,6 @@ public class Server {
         ) {
             while (true) {
                 Socket client = server.accept();
-                System.out.println("client found!");
                 handleClient(client);
             }
         } catch(Exception e) {
