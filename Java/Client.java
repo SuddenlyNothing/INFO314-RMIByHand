@@ -1,21 +1,52 @@
+import java.io.*;
+import java.net.*;
+
 public class Client {
+    public static final String HOST = "localhost";
 
     /**
      * This method name and parameters must remain as-is
      */
     public static int add(int lhs, int rhs) {
-        return -1;
+        return Integer.valueOf(rmi("add", Integer.toString(lhs), Integer.toString(rhs)));
     }
     /**
      * This method name and parameters must remain as-is
      */
     public static int divide(int num, int denom) {
-        return -1;
+        String res = rmi("divide", Integer.toString(num), Integer.toString(denom));
+        if (res.equals("ArithmeticException")) {
+            throw new ArithmeticException();
+        }
+        return Integer.valueOf(res);
     }
     /**
      * This method name and parameters must remain as-is
      */
     public static String echo(String message) {
+        return rmi("echo", message);
+    }
+
+    public static String rmi(String func, String... params) {
+        try (Socket socket = new Socket(HOST, PORT)) {
+            socket.setSoTimeout(15000);
+
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            StringBuilder output = new StringBuilder();
+            output.append(func);
+            for (int i = 0; i < params.length; i++) {
+                output.append(" ");
+                output.append(params[i]);
+            }
+
+            out.println(output);
+            String finished = in.readLine();
+            return finished;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "";
     }
 
